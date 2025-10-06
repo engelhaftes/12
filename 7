@@ -1,0 +1,71 @@
+-- Создание базы данных
+CREATE DATABASE TaxiServiceDB;
+USE TaxiServiceDB;
+
+-- Таблицы
+
+CREATE TABLE Drivers (
+    DriverID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    LicenseNumber NVARCHAR(50),
+    Phone NVARCHAR(20)
+);
+
+CREATE TABLE Clients (
+    ClientID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Cars (
+    CarID INT IDENTITY(1,1) PRIMARY KEY,
+    LicensePlate NVARCHAR(20) NOT NULL,
+    Model NVARCHAR(100),
+    Color NVARCHAR(50),
+    YearManufactured INT
+);
+
+CREATE TABLE Tariffs (
+    TariffID INT IDENTITY(1,1) PRIMARY KEY,
+    TariffName NVARCHAR(100),
+    BaseFare DECIMAL(10,2),
+    PricePerKm DECIMAL(10,2)
+);
+
+CREATE TABLE Trips (
+    TripID INT IDENTITY(1,1) PRIMARY KEY,
+    DriverID INT FOREIGN KEY REFERENCES Drivers(DriverID),
+    ClientID INT FOREIGN KEY REFERENCES Clients(ClientID),
+    CarID INT FOREIGN KEY REFERENCES Cars(CarID),
+    TariffID INT FOREIGN KEY REFERENCES Tariffs(TariffID),
+    StartLocation NVARCHAR(200),
+    EndLocation NVARCHAR(200),
+    TripDate DATETIME,
+    DistanceKm DECIMAL(6,2),
+    Fare DECIMAL(10,2)
+);
+
+-- Тестовые данные
+
+INSERT INTO Drivers (FirstName, LastName, LicenseNumber, Phone) VALUES
+('Игорь', 'Смирнов', 'D1234567', '+79990001111'),
+('Алена', 'Васильева', 'D2345678', '+79990002222');
+
+INSERT INTO Clients (FirstName, LastName, Phone, Email) VALUES
+('Олег', 'Козлов', '+79990003333', 'oleg.kozlov@example.com'),
+('Наталья', 'Сидорова', '+79990004444', 'natalia.sidorova@example.com');
+
+INSERT INTO Cars (LicensePlate, Model, Color, YearManufactured) VALUES
+('X123YZ', 'Toyota Camry', 'Черный', 2019),
+('Y456ZX', 'Hyundai Solaris', 'Белый', 2021);
+
+INSERT INTO Tariffs (TariffName, BaseFare, PricePerKm) VALUES
+('Стандарт', 100.00, 15.00),
+('Комфорт', 150.00, 20.00);
+
+INSERT INTO Trips (DriverID, ClientID, CarID, TariffID, StartLocation, EndLocation, TripDate, DistanceKm, Fare) VALUES
+(1, 1, 1, 1, 'ул. Ленина, 10', 'ул. Пушкина, 5', '2025-10-05 08:30', 10.5, 257.5),
+(2, 2, 2, 2, 'пр. Мира, 20', 'ул. Гагарина, 12', '2025-10-06 14:00', 8.0, 310.00);
