@@ -1,0 +1,74 @@
+-- Создание базы данных
+CREATE DATABASE DentalClinicDB;
+USE DentalClinicDB;
+
+-- Таблицы
+CREATE TABLE Patients (
+    PatientID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    BirthDate DATE,
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Doctors (
+    DoctorID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Specialty NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Procedures (
+    ProcedureID INT IDENTITY(1,1) PRIMARY KEY,
+    ProcedureName NVARCHAR(150) NOT NULL,
+    Cost DECIMAL(10,2),
+    Description NVARCHAR(500)
+);
+
+CREATE TABLE Appointments (
+    AppointmentID INT IDENTITY(1,1) PRIMARY KEY,
+    PatientID INT FOREIGN KEY REFERENCES Patients(PatientID),
+    DoctorID INT FOREIGN KEY REFERENCES Doctors(DoctorID),
+    ProcedureID INT FOREIGN KEY REFERENCES Procedures(ProcedureID),
+    AppointmentDate DATETIME,
+    Notes NVARCHAR(500)
+);
+
+CREATE TABLE Treatments (
+    TreatmentID INT IDENTITY(1,1) PRIMARY KEY,
+    AppointmentID INT FOREIGN KEY REFERENCES Appointments(AppointmentID),
+    TreatmentNotes NVARCHAR(1000),
+    TreatmentDate DATETIME
+);
+
+-- Тестовые данные
+
+INSERT INTO Patients (FirstName, LastName, BirthDate, Phone, Email) VALUES
+('Ольга', 'Кузнецова', '1987-02-14', '+79990005555', 'olga.kuznetsova@example.com'),
+('Андрей', 'Васильев', '1975-12-30', '+79990006666', 'andrey.vasiliev@example.com'),
+('Елена', 'Семенова', '1992-07-22', '+79990007777', 'elena.semenova@example.com');
+
+INSERT INTO Doctors (FirstName, LastName, Specialty, Phone, Email) VALUES
+('Игорь', 'Петров', 'Терапевт', '+79990009999', 'petrov@example.com'),
+('Наталья', 'Смирнова', 'Ортодонт', '+79990008888', 'smirnova@example.com'),
+('Дмитрий', 'Иванов', 'Хирург', '+79990007777', 'ivanov@example.com');
+
+INSERT INTO Procedures (ProcedureName, Cost, Description) VALUES
+('Пломбирование', 3000.00, 'Установка пломбы при кариесе'),
+('Чистка зубов', 1500.00, 'Профессиональная гигиена полости рта'),
+('Удаление зуба', 5000.00, 'Хирургическое удаление зуба'),
+('Отбеливание зубов', 7000.00, 'Косметическая процедура по отбеливанию'),
+('Установка брекетов', 45000.00, 'Исправление прикуса ортодонтическими аппаратами');
+
+INSERT INTO Appointments (PatientID, DoctorID, ProcedureID, AppointmentDate, Notes) VALUES
+(1, 1, 1, '2025-10-01 09:00', 'Пациент жалуется на зубную боль'),
+(2, 2, 5, '2025-10-05 14:00', ''),
+(3, 3, 3, '2025-10-10 11:00', 'Удаление зуба мудрости');
+
+INSERT INTO Treatments (AppointmentID, TreatmentNotes, TreatmentDate) VALUES
+(1, 'Пломба поставлена без осложнений', '2025-10-01 10:00'),
+(2, 'Начато ношение брекетов', '2025-10-05 16:00'),
+(3, 'Удаление прошло успешно, назначен послеоперационный уход', '2025-10-10 12:00');
