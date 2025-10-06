@@ -1,0 +1,110 @@
+-- Создание базы данных
+CREATE DATABASE BusDepotDB;
+USE BusDepotDB;
+
+-- Таблицы
+
+CREATE TABLE Buses (
+    BusID INT IDENTITY(1,1) PRIMARY KEY,
+    BusNumber NVARCHAR(20) NOT NULL,
+    Capacity INT,
+    Model NVARCHAR(100),
+    YearManufactured INT
+);
+
+CREATE TABLE Drivers (
+    DriverID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    LicenseNumber NVARCHAR(50),
+    Phone NVARCHAR(20)
+);
+
+CREATE TABLE Routes (
+    RouteID INT IDENTITY(1,1) PRIMARY KEY,
+    RouteNumber NVARCHAR(20) NOT NULL,
+    StartPoint NVARCHAR(100),
+    EndPoint NVARCHAR(100),
+    DistanceKm DECIMAL(6,2)
+);
+
+CREATE TABLE Stops (
+    StopID INT IDENTITY(1,1) PRIMARY KEY,
+    StopName NVARCHAR(100) NOT NULL,
+    Location NVARCHAR(200)
+);
+
+CREATE TABLE Passengers (
+    PassengerID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+-- Связующие таблицы
+
+CREATE TABLE BusRoutes (
+    BusID INT FOREIGN KEY REFERENCES Buses(BusID),
+    RouteID INT FOREIGN KEY REFERENCES Routes(RouteID),
+    PRIMARY KEY (BusID, RouteID)
+);
+
+CREATE TABLE RouteStops (
+    RouteID INT FOREIGN KEY REFERENCES Routes(RouteID),
+    StopID INT FOREIGN KEY REFERENCES Stops(StopID),
+    StopOrder INT,
+    PRIMARY KEY (RouteID, StopID)
+);
+
+CREATE TABLE PassengerRoutes (
+    PassengerID INT FOREIGN KEY REFERENCES Passengers(PassengerID),
+    RouteID INT FOREIGN KEY REFERENCES Routes(RouteID),
+    PRIMARY KEY (PassengerID, RouteID)
+);
+
+-- Тестовые данные
+
+INSERT INTO Buses (BusNumber, Capacity, Model, YearManufactured) VALUES
+('A123BC', 50, 'Volvo 9700', 2017),
+('B456DE', 40, 'Mercedes-Benz Citaro', 2018),
+('C789FG', 55, 'Scania Touring', 2016);
+
+INSERT INTO Drivers (FirstName, LastName, LicenseNumber, Phone) VALUES
+('Алексей', 'Иванов', 'AB123456', '+79990001111'),
+('Марина', 'Петрова', 'CD234567', '+79990002222'),
+('Сергей', 'Кузнецов', 'EF345678', '+79990003333');
+
+INSERT INTO Routes (RouteNumber, StartPoint, EndPoint, DistanceKm) VALUES
+('10', 'Центральный вокзал', 'Лесная', 15.50),
+('20', 'Автовокзал', 'Парк Победы', 12.00),
+('30', 'Станция метро', 'Университет', 8.75);
+
+INSERT INTO Stops (StopName, Location) VALUES
+('Центральный вокзал', 'ул. Ленина, 1'),
+('Площадь Свободы', 'ул. Советская, 15'),
+('Парк Победы', 'пр. Мира, 22'),
+('Университет', 'ул. Гагарина, 10'),
+('Станция метро', 'пр. Кутузова, 5');
+
+INSERT INTO Passengers (FirstName, LastName, Phone, Email) VALUES
+('Дмитрий', 'Соколов', '+79990004444', 'd.sokolov@example.com'),
+('Елена', 'Новикова', '+79990005555', 'e.novikova@example.com');
+
+INSERT INTO BusRoutes VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+INSERT INTO RouteStops VALUES
+(1, 1, 1),
+(1, 2, 2),
+(1, 3, 3),
+(2, 3, 1),
+(2, 4, 2),
+(3, 5, 1),
+(3, 4, 2);
+
+INSERT INTO PassengerRoutes VALUES
+(1, 1),
+(2, 3);
