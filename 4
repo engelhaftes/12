@@ -1,0 +1,94 @@
+-- Создание базы данных
+CREATE DATABASE OnlineStoreDB;
+USE OnlineStoreDB;
+
+-- Таблицы
+
+CREATE TABLE Categories (
+    CategoryID INT IDENTITY(1,1) PRIMARY KEY,
+    CategoryName NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(300)
+);
+
+CREATE TABLE Products (
+    ProductID INT IDENTITY(1,1) PRIMARY KEY,
+    ProductName NVARCHAR(150) NOT NULL,
+    CategoryID INT FOREIGN KEY REFERENCES Categories(CategoryID),
+    Price DECIMAL(12,2) NOT NULL,
+    Stock INT NOT NULL
+);
+
+CREATE TABLE Customers (
+    CustomerID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Email NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Address NVARCHAR(300)
+);
+
+CREATE TABLE Orders (
+    OrderID INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerID INT FOREIGN KEY REFERENCES Customers(CustomerID),
+    OrderDate DATE NOT NULL,
+    Status NVARCHAR(50)
+);
+
+CREATE TABLE Delivery (
+    DeliveryID INT IDENTITY(1,1) PRIMARY KEY,
+    OrderID INT FOREIGN KEY REFERENCES Orders(OrderID),
+    DeliveryType NVARCHAR(50),
+    DeliveryDate DATE,
+    DeliveryStatus NVARCHAR(50)
+);
+
+CREATE TABLE OrderDetails (
+    OrderID INT FOREIGN KEY REFERENCES Orders(OrderID),
+    ProductID INT FOREIGN KEY REFERENCES Products(ProductID),
+    Quantity INT,
+    Price DECIMAL(12,2),
+    PRIMARY KEY (OrderID, ProductID)
+);
+
+-- Тестовые данные
+
+-- Категории
+INSERT INTO Categories (CategoryName, Description) VALUES
+('Электроника', 'Гаджеты и техника'),
+('Одежда', 'Модная одежда и аксессуары'),
+('Книги', 'Литература и учебники'),
+('Дом и сад', 'Товары для дома и сада'),
+('Спорт', 'Спортивное оборудование и одежда');
+
+-- Товары
+INSERT INTO Products (ProductName, CategoryID, Price, Stock) VALUES
+('Смартфон XYZ', 1, 29999.99, 50),
+('Футболка хлопковая', 2, 799.00, 150),
+('Роман "Война и мир"', 3, 500.00, 75),
+('Набор для барбекю', 4, 3200.00, 20),
+('Гантели 5 кг', 5, 1200.00, 30);
+
+-- Покупатели
+INSERT INTO Customers (FirstName, LastName, Email, Phone, Address) VALUES
+('Игорь', 'Смирнов', 'igor.smirnov@example.com', '+79990001111', 'Москва, ул. Ленина, 10'),
+('Елена', 'Козлова', 'elena.kozlova@example.com', '+79990002222', 'Санкт-Петербург, пр. Невский, 5'),
+('Александр', 'Новиков', 'alex.novikov@example.com', '+79990003333', 'Новосибирск, ул. Советская, 45');
+
+-- Заказы
+INSERT INTO Orders (CustomerID, OrderDate, Status) VALUES
+(1, '2025-09-25', 'В обработке'),
+(2, '2025-09-27', 'Отправлен'),
+(3, '2025-09-30', 'Доставлен');
+
+-- Доставка
+INSERT INTO Delivery (OrderID, DeliveryType, DeliveryDate, DeliveryStatus) VALUES
+(1, 'Курьер', NULL, 'Ожидание'),
+(2, 'Самовывоз', '2025-09-28', 'Выполнено'),
+(3, 'Почта', '2025-10-01', 'Выполнено');
+
+-- Детали заказов
+INSERT INTO OrderDetails VALUES
+(1, 1, 1, 29999.99),
+(2, 2, 2, 1598.00),
+(3, 3, 1, 500.00),
+(3, 5, 2, 2400.00);
