@@ -1,0 +1,126 @@
+-- =================================================================
+-- Создание базы данных
+CREATE DATABASE ResearchDB;
+USE ResearchDB;
+
+-- =================================================================
+-- СОЗДАНИЕ ТАБЛИЦ
+-- =================================================================
+
+CREATE TABLE Researchers (
+    ResearcherID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Email NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Affiliation NVARCHAR(200)
+);
+
+CREATE TABLE Projects (
+    ProjectID INT IDENTITY(1,1) PRIMARY KEY,
+    ProjectTitle NVARCHAR(200) NOT NULL,
+    StartDate DATE,
+    EndDate DATE,
+    Description NVARCHAR(1000),
+    Status NVARCHAR(20) DEFAULT 'Active'
+);
+
+CREATE TABLE Publications (
+    PublicationID INT IDENTITY(1,1) PRIMARY KEY,
+    Title NVARCHAR(300) NOT NULL,
+    PublicationDate DATE,
+    Journal NVARCHAR(200),
+    DOI NVARCHAR(100)
+);
+
+CREATE TABLE Grants (
+    GrantID INT IDENTITY(1,1) PRIMARY KEY,
+    GrantTitle NVARCHAR(200) NOT NULL,
+    FundingAgency NVARCHAR(200),
+    Amount DECIMAL(18,2),
+    GrantStartDate DATE,
+    GrantEndDate DATE
+);
+
+CREATE TABLE ResearcherProjects (
+    ResearcherID INT FOREIGN KEY REFERENCES Researchers(ResearcherID),
+    ProjectID INT FOREIGN KEY REFERENCES Projects(ProjectID),
+    Role NVARCHAR(100),
+    PRIMARY KEY (ResearcherID, ProjectID)
+);
+
+CREATE TABLE ProjectPublications (
+    ProjectID INT FOREIGN KEY REFERENCES Projects(ProjectID),
+    PublicationID INT FOREIGN KEY REFERENCES Publications(PublicationID),
+    PRIMARY KEY (ProjectID, PublicationID)
+);
+
+CREATE TABLE ProjectGrants (
+    ProjectID INT FOREIGN KEY REFERENCES Projects(ProjectID),
+    GrantID INT FOREIGN KEY REFERENCES Grants(GrantID),
+    PRIMARY KEY (ProjectID, GrantID)
+);
+
+-- =================================================================
+-- ЗАПОЛНЕНИЕ ТЕСТОВЫМИ ДАННЫМИ
+-- =================================================================
+
+INSERT INTO Researchers (FirstName, LastName, Email, Phone, Affiliation) VALUES
+('Иван', 'Иванов', 'ivanov@example.com', '+79990001111', 'Институт биологии'),
+('Анна', 'Петрова', 'petrova@example.com', '+79990002222', 'Физический факультет'),
+('Сергей', 'Сидоров', 'sidorov@example.com', '+79990003333', 'Кафедра химии'),
+('Марина', 'Кузнецова', 'kuznetsova@example.com', '+79990004444', 'Факультет экологии'),
+('Дмитрий', 'Васильев', 'vasiliev@example.com', '+79990005555', 'Институт медицины');
+
+INSERT INTO Projects (ProjectTitle, StartDate, EndDate, Description, Status) VALUES
+('Изучение влияния климата на растения', '2023-01-01', '2025-12-31', 'Долгосрочное исследование по адаптации флоры к климатическим изменениям', 'Active'),
+('Разработка нового материала для электроники', '2024-03-01', NULL, 'Проект по созданию биоразлагаемых сенсоров', 'Active'),
+('Анализ данных геномики человека', '2022-05-15', '2024-05-14', 'Использование ИИ для анализа и интерпретации геномных данных', 'Active'),
+('Исследование микробиома кишечника', '2023-06-01', '2025-05-31', 'Анализ состава и функции микробиоты кишечника', 'Active'),
+('Влияние загрязнения воздуха на здоровье', '2021-09-01', '2023-08-31', 'Изучение корреляции между загрязнением и заболеваниями дыхательных путей', 'Closed');
+
+INSERT INTO Publications (Title, PublicationDate, Journal, DOI) VALUES
+('Влияние температуры на фотосинтез', '2023-06-15', 'Журнал ботаники', '10.1000/jbot.2023.001'),
+('Новый композитный материал', '2024-01-10', 'Материалы будущего', '10.1000/matfut.2024.015'),
+('Применение глубокого обучения в геномике', '2024-04-20', 'Журнал биоинформатики', '10.1000/bioinfo.2024.123'),
+('Микробиом и его роль в иммунитете', '2025-02-28', 'Медицинский журнал', '10.1000/medj.2025.045'),
+('Воздействие веществ загрязнения на легкие', '2023-11-10', 'Экологический вестник', '10.1000/env.2023.067');
+
+INSERT INTO Grants (GrantTitle, FundingAgency, Amount, GrantStartDate, GrantEndDate) VALUES
+('Фонд научных исследований 2023', 'Российский фонд фундаментальных исследований', 5000000, '2023-01-01', '2025-12-31'),
+('Грант по инновационным технологиям', 'Министерство науки и высшего образования', 3000000, '2024-02-01', '2026-01-31'),
+('Медицинские исследования', 'Фонд поддержки медицинских проектов', 4000000, '2023-05-01', '2025-04-30'),
+('Экологический грант', 'Глобальный экологический фонд', 3500000, '2022-09-01', '2024-08-31'),
+('Поддержка исследований ИИ', 'Фонд перспективных технологий', 4500000, '2023-03-15', '2025-03-14');
+
+-- Связи исследователей с проектами
+INSERT INTO ResearcherProjects VALUES (1, 1, 'Руководитель проекта');
+INSERT INTO ResearcherProjects VALUES (2, 2, 'Исследователь');
+INSERT INTO ResearcherProjects VALUES (3, 3, 'Аналитик данных');
+INSERT INTO ResearcherProjects VALUES (4, 4, 'Старший исследователь');
+INSERT INTO ResearcherProjects VALUES (5, 5, 'Научный консультант');
+
+-- Связи проектов с публикациями
+INSERT INTO ProjectPublications VALUES (1, 1);
+INSERT INTO ProjectPublications VALUES (2, 2);
+INSERT INTO ProjectPublications VALUES (3, 3);
+INSERT INTO ProjectPublications VALUES (4, 4);
+INSERT INTO ProjectPublications VALUES (5, 5);
+
+-- Связи проектов с грантами
+INSERT INTO ProjectGrants VALUES (1, 1);
+INSERT INTO ProjectGrants VALUES (2, 2);
+INSERT INTO ProjectGrants VALUES (3, 5);
+INSERT INTO ProjectGrants VALUES (4, 3);
+INSERT INTO ProjectGrants VALUES (5, 4);
+
+-- =================================================================
+-- Создание индексов для повышения производительности
+-- =================================================================
+
+CREATE INDEX IX_ResearcherProjects_ResearcherID ON ResearcherProjects(ResearcherID);
+CREATE INDEX IX_ResearcherProjects_ProjectID ON ResearcherProjects(ProjectID);
+CREATE INDEX IX_ProjectPublications_ProjectID ON ProjectPublications(ProjectID);
+CREATE INDEX IX_ProjectPublications_PublicationID ON ProjectPublications(PublicationID);
+CREATE INDEX IX_ProjectGrants_ProjectID ON ProjectGrants(ProjectID);
+CREATE INDEX IX_ProjectGrants_GrantID ON ProjectGrants(GrantID);
