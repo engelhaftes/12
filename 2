@@ -1,0 +1,99 @@
+-- Создание базы данных
+CREATE DATABASE PharmacyDB;
+USE PharmacyDB;
+
+-- Таблицы
+CREATE TABLE Medicines (
+    MedicineID INT IDENTITY(1,1) PRIMARY KEY,
+    MedicineName NVARCHAR(150) NOT NULL,
+    Description NVARCHAR(500),
+    Price DECIMAL(10,2) NOT NULL,
+    ExpiryDate DATE
+);
+
+CREATE TABLE Clients (
+    ClientID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    BirthDate DATE,
+    Email NVARCHAR(100),
+    Phone NVARCHAR(20)
+);
+
+CREATE TABLE Prescriptions (
+    PrescriptionID INT IDENTITY(1,1) PRIMARY KEY,
+    ClientID INT FOREIGN KEY REFERENCES Clients(ClientID),
+    IssueDate DATE,
+    DoctorName NVARCHAR(100),
+    Notes NVARCHAR(500)
+);
+
+CREATE TABLE Suppliers (
+    SupplierID INT IDENTITY(1,1) PRIMARY KEY,
+    SupplierName NVARCHAR(150) NOT NULL,
+    ContactName NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Sales (
+    SaleID INT IDENTITY(1,1) PRIMARY KEY,
+    ClientID INT FOREIGN KEY REFERENCES Clients(ClientID),
+    MedicineID INT FOREIGN KEY REFERENCES Medicines(MedicineID),
+    SaleDate DATE,
+    Quantity INT,
+    TotalPrice DECIMAL(12,2)
+);
+
+CREATE TABLE PrescriptionMedicines (
+    PrescriptionID INT FOREIGN KEY REFERENCES Prescriptions(PrescriptionID),
+    MedicineID INT FOREIGN KEY REFERENCES Medicines(MedicineID),
+    Dosage NVARCHAR(100),
+    PRIMARY KEY (PrescriptionID, MedicineID)
+);
+
+CREATE TABLE MedicineSuppliers (
+    MedicineID INT FOREIGN KEY REFERENCES Medicines(MedicineID),
+    SupplierID INT FOREIGN KEY REFERENCES Suppliers(SupplierID),
+    PRIMARY KEY (MedicineID, SupplierID)
+);
+
+-- Тестовые данные
+
+INSERT INTO Medicines (MedicineName, Description, Price, ExpiryDate) VALUES
+('Парацетамол', 'Обезболивающее и жаропонижающее', 50.00, '2026-06-30'),
+('Амоксициллин', 'Антибиотик широкого спектра', 200.00, '2025-12-31'),
+('Ибупрофен', 'Противовоспалительное средство', 70.00, '2026-08-15'),
+('Цетрин', 'Противоаллергическое средство', 120.00, '2027-04-10'),
+('Витамин С', 'Витаминный комплекс', 30.00, '2025-11-20');
+
+INSERT INTO Clients (FirstName, LastName, BirthDate, Email, Phone) VALUES
+('Алексей', 'Иванов', '1985-05-20', 'ivanov@example.com', '+79990001111'),
+('Мария', 'Петрова', '1990-10-10', 'petrova@example.com', '+79990002222'),
+('Дмитрий', 'Сидоров', '1978-03-15', 'sidorov@example.com', '+79990003333');
+
+INSERT INTO Prescriptions (ClientID, IssueDate, DoctorName, Notes) VALUES
+(1, '2025-09-01', 'Доктор Смирнов', 'Принимать после еды'),
+(2, '2025-09-05', 'Доктор Кузнецова', 'Курс 7 дней'),
+(3, '2025-09-10', 'Доктор Иванова', '');
+
+INSERT INTO Suppliers (SupplierID, SupplierName, ContactName, Phone, Email) VALUES
+(1, 'Поставщик А', 'Иван Иванов', '+79990009999', 'contactA@example.com'),
+(2, 'Поставщик Б', 'Петр Петров', '+79990008888', 'contactB@example.com');
+
+INSERT INTO Sales (ClientID, MedicineID, SaleDate, Quantity, TotalPrice) VALUES
+(1, 1, '2025-09-02', 2, 100.00),
+(2, 2, '2025-09-06', 1, 200.00),
+(3, 4, '2025-09-12', 3, 360.00);
+
+INSERT INTO PrescriptionMedicines VALUES
+(1, 1, '500 мг, 2 раза в день'),
+(2, 2, '250 мг, 3 раза в день'),
+(2, 5, '1 таблетка в день');
+
+INSERT INTO MedicineSuppliers VALUES
+(1, 1),
+(2, 2),
+(3, 1),
+(4, 2),
+(5, 1);
