@@ -1,0 +1,96 @@
+-- Создание базы данных
+CREATE DATABASE RestaurantDB;
+USE RestaurantDB;
+
+-- Таблицы
+
+CREATE TABLE Dishes (
+    DishID INT IDENTITY(1,1) PRIMARY KEY,
+    DishName NVARCHAR(150) NOT NULL,
+    Description NVARCHAR(500),
+    Price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE Clients (
+    ClientID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Staff (
+    StaffID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Position NVARCHAR(100),
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Tables (
+    TableID INT IDENTITY(1,1) PRIMARY KEY,
+    TableNumber INT NOT NULL,
+    Seats INT NOT NULL
+);
+
+CREATE TABLE Orders (
+    OrderID INT IDENTITY(1,1) PRIMARY KEY,
+    ClientID INT FOREIGN KEY REFERENCES Clients(ClientID),
+    StaffID INT FOREIGN KEY REFERENCES Staff(StaffID),
+    TableID INT FOREIGN KEY REFERENCES Tables(TableID),
+    OrderDate DATETIME NOT NULL,
+    TotalAmount DECIMAL(12,2)
+);
+
+CREATE TABLE OrderItems (
+    OrderID INT FOREIGN KEY REFERENCES Orders(OrderID),
+    DishID INT FOREIGN KEY REFERENCES Dishes(DishID),
+    Quantity INT,
+    Price DECIMAL(12,2),
+    PRIMARY KEY (OrderID, DishID)
+);
+
+-- Тестовые данные
+
+-- Блюда
+INSERT INTO Dishes (DishName, Description, Price) VALUES
+('Цезарь с курицей', 'Салат с курицей, сухариками и соусом Цезарь', 450.00),
+('Пицца Маргарита', 'Томатный соус, моцарелла, базилик', 700.00),
+('Суп Том Ям', 'Острый тайский суп с креветками', 550.00),
+('Ризотто с грибами', 'Кремовое ризотто с лесными грибами', 600.00),
+('Медовик', 'Торт с медовым кремом', 300.00);
+
+-- Клиенты
+INSERT INTO Clients (FirstName, LastName, Phone, Email) VALUES
+('Ольга', 'Петрова', '+79990001111', 'olga.pet@example.com'),
+('Михаил', 'Кузнецов', '+79990002222', 'mihail.kuz@example.com'),
+('Екатерина', 'Смирнова', '+79990003333', 'ekaterina.sm@example.com');
+
+-- Персонал
+INSERT INTO Staff (FirstName, LastName, Position, Phone, Email) VALUES
+('Алексей', 'Иванов', 'Официант', '+79990009999', 'ivanov.a@example.com'),
+('Елена', 'Соколова', 'Повар', '+79990008888', 'sokolova.e@example.com'),
+('Дмитрий', 'Морозов', 'Администратор', '+79990007777', 'morozov.d@example.com');
+
+-- Столики
+INSERT INTO Tables (TableNumber, Seats) VALUES
+(1, 4),
+(2, 2),
+(3, 6),
+(4, 4),
+(5, 8);
+
+-- Заказы
+INSERT INTO Orders (ClientID, StaffID, TableID, OrderDate, TotalAmount) VALUES
+(1, 1, 1, '2025-10-01 19:30', 1150.00),
+(2, 1, 2, '2025-10-02 20:00', 700.00),
+(3, 3, 3, '2025-10-03 18:45', 900.00);
+
+-- Позиции заказов
+INSERT INTO OrderItems VALUES
+(1, 1, 2, 900.00),
+(1, 5, 1, 300.00),
+(2, 2, 1, 700.00),
+(3, 3, 1, 550.00),
+(3, 4, 1, 600.00);
