@@ -1,0 +1,82 @@
+-- Создание базы данных
+CREATE DATABASE InsuranceCompanyDB;
+USE InsuranceCompanyDB;
+
+-- Таблицы
+
+CREATE TABLE Clients (
+    ClientID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    BirthDate DATE,
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Agents (
+    AgentID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50) NOT NULL,
+    LastName NVARCHAR(50) NOT NULL,
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE Policies (
+    PolicyID INT IDENTITY(1,1) PRIMARY KEY,
+    ClientID INT FOREIGN KEY REFERENCES Clients(ClientID),
+    AgentID INT FOREIGN KEY REFERENCES Agents(AgentID),
+    PolicyNumber NVARCHAR(50) NOT NULL,
+    PolicyType NVARCHAR(100),
+    StartDate DATE,
+    EndDate DATE,
+    Premium DECIMAL(12,2)
+);
+
+CREATE TABLE Claims (
+    ClaimID INT IDENTITY(1,1) PRIMARY KEY,
+    PolicyID INT FOREIGN KEY REFERENCES Policies(PolicyID),
+    ClaimDate DATE,
+    ClaimAmount DECIMAL(12,2),
+    ClaimStatus NVARCHAR(50),
+    Description NVARCHAR(500)
+);
+
+CREATE TABLE ClaimAdjusters (
+    AdjusterID INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Phone NVARCHAR(20),
+    Email NVARCHAR(100)
+);
+
+CREATE TABLE ClaimsAdjustersAssignment (
+    ClaimID INT FOREIGN KEY REFERENCES Claims(ClaimID),
+    AdjusterID INT FOREIGN KEY REFERENCES ClaimAdjusters(AdjusterID),
+    PRIMARY KEY (ClaimID, AdjusterID)
+);
+
+-- Тестовые данные
+
+INSERT INTO Clients (FirstName, LastName, BirthDate, Phone, Email) VALUES
+('Марина', 'Петрова', '1985-13-05', '+79990001111', 'm.petrova@example.com'),
+('Алексей', 'Иванов', '1978-09-12', '+79990002222', 'a.ivanov@example.com');
+
+INSERT INTO Agents (FirstName, LastName, Phone, Email) VALUES
+('Олег', 'Кузнецов', '+79990003333', 'oleg.k@example.com'),
+('Екатерина', 'Смирнова', '+79990004444', 'ekaterina.s@example.com');
+
+INSERT INTO Policies (ClientID, AgentID, PolicyNumber, PolicyType, StartDate, EndDate, Premium) VALUES
+(1, 1, 'POL123456', 'Автомобильное страхование', '2025-01-01', '2025-12-31', 15000.00),
+(2, 2, 'POL654321', 'Страхование жизни', '2025-03-01', '2026-02-28', 20000.00);
+
+INSERT INTO Claims (PolicyID, ClaimDate, ClaimAmount, ClaimStatus, Description) VALUES
+(1, '2025-06-15', 50000.00, 'Рассматривается', 'ДТП с повреждением автомобиля'),
+(2, '2025-04-20', 120000.00, 'Одобрено', 'Возмещение по страхованию жизни');
+
+INSERT INTO ClaimAdjusters (FirstName, LastName, Phone, Email) VALUES
+('Ирина', 'Соколова', '+79990005555', 'irina.sokolova@example.com'),
+('Владимир', 'Морозов', '+79990006666', 'vladimir.morozov@example.com');
+
+INSERT INTO ClaimsAdjustersAssignment VALUES
+(1, 1),
+(2, 2);
